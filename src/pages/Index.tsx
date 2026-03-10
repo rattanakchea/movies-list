@@ -9,14 +9,20 @@ import SearchBar from "@/components/SearchBar";
 import GenreFilter from "@/components/GenreFilter";
 import MovieDetailModal from "@/components/MovieDetailModal";
 import { TrendingUp } from "lucide-react";
+import type { User } from "@supabase/supabase-js";
 
-const Index = () => {
+interface IndexProps {
+  user?: User | null;
+  signOut?: () => void;
+}
+
+const Index = ({ user, signOut }: IndexProps) => {
   const [search, setSearch] = useState("");
   const [genreFilter, setGenreFilter] = useState<string | null>(null);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   const { collection, addMovie, removeMovie, updateCategory, updateNote, isInCollection, getCategory } =
-    useCollection();
+    useCollection(user);
 
   const filteredMovies = useMemo(() => {
     let movies = allMovies;
@@ -42,7 +48,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header user={user} onSignOut={signOut} />
 
       <main className="container mx-auto px-4 py-10">
         {/* Hero */}
