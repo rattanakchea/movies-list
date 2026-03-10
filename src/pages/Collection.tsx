@@ -5,10 +5,16 @@ import { useCollection } from "@/hooks/useCollection";
 import Header from "@/components/Header";
 import MovieDetailModal from "@/components/MovieDetailModal";
 import { Star, StickyNote, Trash2, Library } from "lucide-react";
+import type { User } from "@supabase/supabase-js";
 
-const Collection = () => {
+interface CollectionProps {
+  user?: User | null;
+  signOut?: () => void;
+}
+
+const Collection = ({ user, signOut }: CollectionProps) => {
   const { collection, removeMovie, updateCategory, updateNote, isInCollection, getCategory } =
-    useCollection();
+    useCollection(user);
   const [activeTab, setActiveTab] = useState<CollectionCategory | "all">("all");
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
@@ -30,7 +36,7 @@ const Collection = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header user={user} onSignOut={signOut} />
       <main className="container mx-auto px-4 py-10">
         <div className="mb-8">
           <h1 className="font-display text-3xl font-bold text-foreground sm:text-4xl">
@@ -85,14 +91,12 @@ const Collection = () => {
                 onClick={() => setSelectedMovie(saved.movie)}
                 className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 card-hover cursor-pointer"
               >
-                {/* Mini poster */}
                 <div className="flex h-16 w-11 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
                   <span className="font-display text-lg font-bold text-muted-foreground/30">
                     {saved.movie.title.charAt(0)}
                   </span>
                 </div>
 
-                {/* Info */}
                 <div className="min-w-0 flex-1">
                   <h3 className="font-semibold text-card-foreground truncate">{saved.movie.title}</h3>
                   <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
@@ -113,7 +117,6 @@ const Collection = () => {
                   )}
                 </div>
 
-                {/* Remove */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();

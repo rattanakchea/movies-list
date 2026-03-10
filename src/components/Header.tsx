@@ -1,7 +1,14 @@
-import { Film } from "lucide-react";
+import { Film, LogOut, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import type { User as AuthUser } from "@supabase/supabase-js";
 
-const Header = () => {
+interface HeaderProps {
+  user?: AuthUser | null;
+  onSignOut?: () => void;
+}
+
+const Header = ({ user, onSignOut }: HeaderProps) => {
   const location = useLocation();
 
   const navItems = [
@@ -21,21 +28,48 @@ const Header = () => {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                location.pathname === item.path
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              }`}
-            >
-              {item.label}
+        <div className="flex items-center gap-1">
+          <nav className="flex items-center gap-1">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                  location.pathname === item.path
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          {user ? (
+            <div className="ml-3 flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent">
+                {user.user_metadata?.avatar_url ? (
+                  <img
+                    src={user.user_metadata.avatar_url}
+                    alt=""
+                    className="h-8 w-8 rounded-full"
+                  />
+                ) : (
+                  <User className="h-4 w-4 text-accent-foreground" />
+                )}
+              </div>
+              <Button variant="ghost" size="icon" onClick={onSignOut} className="h-8 w-8">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <Link to="/auth">
+              <Button variant="default" size="sm" className="ml-3">
+                Sign In
+              </Button>
             </Link>
-          ))}
-        </nav>
+          )}
+        </div>
       </div>
     </header>
   );
